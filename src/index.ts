@@ -34,22 +34,32 @@ export class BoardElement extends LitElement {
   static readonly BOARD_ROWS: number = 120;
   static readonly BOARD_COLUMNS: number = 120;
   static styles = css`
+    :host {
+      background-color: #000000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: block;
+    }
     .board-base {
-      border: 2px solid black;
+      border: 2px solid #00ff00;
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
+      background-color: #111111;
     }
     .board-container-base {
       padding: 1.5rem;
       width: ${BoardElement.BOARD_WIDTH_PIXELS}px;
       height: ${BoardElement.BOARD_HEIGHT_PIXELS}px;
       margin: 0 auto;
+      background-color: #000000;
     }
     .board-message {
       text-align: center;
       padding: 0.5rem;
+      color: #00ff00;
     }
     .board-controller {
       width: 100%;
@@ -58,10 +68,12 @@ export class BoardElement extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid black;
+      border: 2px solid #00ff00;
+      background-color: #111111;
     }
     .board-controller__is-running {
-      border: 2px solid green;
+      border: 2px solid #00ff00;
+      box-shadow: 0 0 10px #00ff00;
     }
     .board-row {
       width: 100%;
@@ -75,18 +87,50 @@ export class BoardElement extends LitElement {
       display: block;
       flex-grow: 1;
       margin: 0;
-      border: 1px solid black;
+      border: 1px solid #003300;
+      background-color: #000000;
     }
     .board-cell-alive {
-      background-color: black;
+      background-color: #00ff00;
+      box-shadow: 0 0 2px #00ff00;
     }
 
     .header-base {
       text-align: center;
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+      font-weight: bold;
     }
     .toggle-running-btn-base {
       padding: 0.5rem;
       border-radius: 10px;
+      background-color: #000000;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+    }
+    .toggle-running-btn-base:hover {
+      background-color: #003300;
+      box-shadow: 0 0 5px #00ff00;
+    }
+    .randomize-btn-base {
+      padding: 0.5rem;
+      border-radius: 10px;
+      margin-left: 0.5rem;
+      background-color: #000000;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+    }
+    .randomize-btn-base:hover {
+      background-color: #003300;
+      box-shadow: 0 0 5px #00ff00;
+    }
+    p {
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
     }
   `;
 
@@ -123,30 +167,37 @@ export class BoardElement extends LitElement {
     this.board.toggleCell(row, column);
     this.cells = this.board.getCells();
   }
+  handleRandomizeClicked() {
+    this.board.randomize();
+    this.cells = this.board.getCells();
+  }
 
   render() {
-    const boardContainerClasses = classMap({ "board-container-base": true });
-    const boardClasses = classMap({ "board-base": true });
-    const controllerClasses = classMap({
-      "board-controller": true,
-      "board-controller__is-running": this.running,
-    });
-    const toggleRunningBtnClasses = classMap({
-      "toggle-running-btn-base": true,
-    });
-    const headerClasses = classMap({ "header-base": true });
-    return html`<div class=${boardContainerClasses}>
-    <h1 class=${headerClasses}>Conway's Game of Life</h1>
-        <div class=${boardClasses}">
+    return html`<div class=${classMap({ "board-container-base": true })}>
+    <h1 class=${classMap({ "header-base": true })}>Conway's Game of Life</h1>
+        <div class=${classMap({ "board-base": true })}">
         ${renderCells(this.cells, this.handleCellClicked.bind(this))}
       </div>
-      <div class=${controllerClasses}>
+      <div class=${classMap({
+        "board-controller": true,
+        "board-controller__is-running": this.running,
+      })}>
           <p style="padding: 0.5rem">Epoch: ${this.epoch}</p>
             <button
               @click="${this.handleStartStopClicked}"
-              class=${toggleRunningBtnClasses}
+              class=${classMap({
+                "toggle-running-btn-base": true,
+              })}
             >
               ${this.board.controller.stopped ? "Start" : "Stop"}
+            </button>
+            <button
+              @click="${this.handleRandomizeClicked}"
+              class=${classMap({
+                "randomize-btn-base": true,
+              })}
+            >
+              Randomize
             </button>
           </div>
         </div>

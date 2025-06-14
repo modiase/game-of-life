@@ -39,6 +39,7 @@ export interface Board {
   readonly toggleCell: (row: number, column: number) => boolean;
   readonly getCells: () => Cells;
   readonly evolve: () => BoardEvolution;
+  readonly randomize: () => void;
 }
 export const createBoard = (
   startCells: ReadonlyArray<[number, number]>,
@@ -175,6 +176,21 @@ export const createBoard = (
     return _cells[row][column].alive;
   };
 
+  const randomize = (): void => {
+    _cells = f.pipe(
+      _cells,
+      RA.map((row) =>
+        f.pipe(
+          row,
+          RA.map((cell) => ({
+            ...cell,
+            alive: Math.random() < 0.3, // 30% chance of being alive
+          }))
+        )
+      )
+    );
+  };
+
   return {
     getCells() {
       return _cells;
@@ -186,6 +202,7 @@ export const createBoard = (
     startCells,
     toggleCell,
     evolve,
+    randomize,
   };
 };
 
@@ -198,6 +215,7 @@ export interface BoardHandle {
   readonly controller: BoardController;
   readonly toggleCell: (row: number, column: number) => boolean;
   readonly getCells: () => Cells;
+  readonly randomize: () => void;
 }
 export interface CreateBoardHandleOptions {
   readonly rows: number;
@@ -246,5 +264,6 @@ export const createBoardHandle = ({
     toggleCell: _board.toggleCell,
     controller,
     evolution$,
+    randomize: _board.randomize,
   };
 };
